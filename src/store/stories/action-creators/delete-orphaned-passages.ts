@@ -32,11 +32,11 @@ export function deleteOrphanedPassages(
 	}
 
 	return dispatch => {
-		const oldLinks = parseLinks(oldText);
-		const newLinks = parseLinks(newText);
-		const orphans = oldLinks.filter(link => !newLinks.includes(link));
+		const oldLinks = parseLinks(oldText, false, false) as string[];
+		const newLinks = parseLinks(newText, false, false) as string[];
+		const orphans = oldLinks.filter((link: string) => !newLinks.includes(link));
 
-		const passageIds = orphans.reduce<string[]>((result, orphan) => {
+		const passageIds = orphans.reduce<string[]>((result: string[], orphan: string) => {
 			const orphanPassage = story.passages.find(p => p.name === orphan);
 
 			// These tests are fast because they look at the passage object only.
@@ -53,7 +53,7 @@ export function deleteOrphanedPassages(
 
 			if (
 				story.passages.some(
-					p => p.id !== passage.id && parseLinks(p.text).includes(orphan)
+					p => p.id !== passage.id && (parseLinks(p.text, false, false) as string[]).includes(orphan)
 				)
 			) {
 				return result;

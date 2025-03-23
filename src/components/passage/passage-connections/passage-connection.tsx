@@ -15,10 +15,35 @@ export interface PassageConnectionProps {
 	offset: Point;
 	start: Passage;
 	variant: 'link' | 'reference';
+	description?: string;
 }
 
+// Function to determine link color from description
+const getLinkColor = (description?: string): string => {
+	if (!description) {
+		return ''; // Default color from CSS
+	}
+
+	// Different prefixes for different colors
+	if (description.startsWith('red:')) {
+		return 'red-link';
+	} else if (description.startsWith('green:')) {
+		return 'green-link';
+	} else if (description.startsWith('blue:')) {
+		return 'blue-link';
+	} else if (description.startsWith('purple:')) {
+		return 'purple-link';
+	} else if (description.startsWith('orange:')) {
+		return 'orange-link';
+	}
+
+	return '';
+};
+
 export const PassageConnection: React.FC<PassageConnectionProps> = props => {
-	const {end, offset, start, variant} = props;
+	const {end, offset, start, variant, description} = props;
+	const colorClass = getLinkColor(description);
+	
 	const path = React.useMemo(() => {
 		// If either passage is selected, offset it. We need to take care not to
 		// overwrite the passage information.
@@ -94,10 +119,16 @@ export const PassageConnection: React.FC<PassageConnectionProps> = props => {
 		});
 	}, [end, offset.left, offset.top, start]);
 
+	// Combine CSS classes for base styling, variant, and color
+	const classNames = [`passage-connection`, `variant-${variant}`];
+	if (colorClass) {
+		classNames.push(colorClass);
+	}
+
 	return (
 		<path
 			d={path}
-			className={`passage-connection variant-${variant}`}
+			className={classNames.join(' ')}
 			style={{markerEnd: 'url(#link-arrowhead)'}}
 		/>
 	);

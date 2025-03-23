@@ -2,7 +2,14 @@ import Fuse from 'fuse.js';
 import uniq from 'lodash/uniq';
 import {Passage, StorySearchFlags, Story} from './stories.types';
 import {createRegExp} from '../../util/regexp';
-import {parseLinks} from '../../util/parse-links';
+import {parseLinks, LinkInfo} from '../../util/parse-links';
+
+// Custom interface for passage connections that includes link description
+export interface PassageConnection {
+	from: Passage;
+	to: Passage;
+	description?: string;
+}
 
 export function passageWithId(
 	stories: Story[],
@@ -10,15 +17,20 @@ export function passageWithId(
 	passageId: string
 ) {
 	const story = storyWithId(stories, storyId);
-	const result = story.passages.find(p => p.id === passageId);
 
-	if (result) {
-		return result;
+	if (!story) {
+		throw new Error(`There is no story with ID "${storyId}".`);
 	}
 
-	throw new Error(
-		`There is no passage with ID "${passageId}" in a story with ID "${storyId}".`
-	);
+	const passage = story.passages.find(p => p.id === passageId);
+
+	if (!passage) {
+		throw new Error(
+			`There is no passage with ID "${passageId}" in a story with ID "${storyId}".`
+		);
+	}
+
+	return passage;
 }
 
 export function passageWithName(
@@ -27,10 +39,15 @@ export function passageWithName(
 	passageName: string
 ) {
 	const story = storyWithId(stories, storyId);
-	const result = story.passages.find(p => p.name === passageName);
 
-	if (result) {
-		return result;
+	if (!story) {
+		throw new Error(`There is no story with ID "${storyId}".`);
+	}
+
+	const passage = story.passages.find(p => p.name === passageName);
+
+	if (passage) {
+		return passage;
 	}
 
 	throw new Error(
@@ -42,28 +59,39 @@ export function passageWithName(
  * Returns connections between passages in a structure optimized for rendering.
  * Connections are divided between draggable and fixed, depending on whether
  * either of their passages are selected (and could be dragged by the user).
+ * Now also includes link descriptions for styling.
  */
 export function passageConnections(
 	passages: Passage[],
-	connectionParser?: (text: string) => string[]
+	connectionParser?: (text: string) => string[] | LinkInfo[]
 ) {
-	const parser = connectionParser ?? ((text: string) => parseLinks(text, true));
+	// Default parser now includes descriptions
+	const parser = connectionParser ?? 
+		((text: string) => parseLinks(text, true, true) as LinkInfo[]);
+		
 	const passageMap = new Map(passages.map(p => [p.name, p]));
 	const result = {
 		draggable: {
 			broken: new Set<Passage>(),
-			connections: new Map<Passage, Set<Passage>>(),
+			connections: new Map<Passage, Set<PassageConnection>>(),
 			self: new Set<Passage>()
 		},
 		fixed: {
 			broken: new Set<Passage>(),
-			connections: new Map<Passage, Set<Passage>>(),
+			connections: new Map<Passage, Set<PassageConnection>>(),
 			self: new Set<Passage>()
 		}
 	};
 
-	passages.forEach(passage =>
-		parser(passage.text).forEach(targetName => {
+	passages.forEach(passage => {
+		const links = parser(passage.text);
+		
+		// Process each link
+		for (const link of links) {
+			// Handle both string and LinkInfo formats for backward compatibility
+			const targetName = typeof link === 'string' ? link : link.target;
+			const description = typeof link === 'string' ? undefined : link.description;
+			
 			if (targetName === passage.name) {
 				(passage.selected ? result.draggable : result.fixed).self.add(passage);
 			} else {
@@ -75,10 +103,16 @@ export function passageConnections(
 							? result.draggable
 							: result.fixed;
 
+					const connection: PassageConnection = {
+						from: passage,
+						to: targetPassage,
+						description
+					};
+
 					if (target.connections.has(passage)) {
-						target.connections.get(passage)!.add(targetPassage);
+						target.connections.get(passage)!.add(connection);
 					} else {
-						target.connections.set(passage, new Set([targetPassage]));
+						target.connections.set(passage, new Set([connection]));
 					}
 				} else {
 					(passage.selected ? result.draggable : result.fixed).broken.add(
@@ -86,8 +120,8 @@ export function passageConnections(
 					);
 				}
 			}
-		})
-	);
+		}
+	});
 
 	return result;
 }
@@ -160,21 +194,26 @@ export function storyPassageTags(story: Story) {
 }
 
 export function storyStats(story: Story) {
-	const links = story.passages.reduce<string[]>(
-		(links, passage) => [
-			...links,
-			...parseLinks(passage.text).filter(link => links.indexOf(link) === -1)
-		],
-		[]
-	);
+	// Call parseLinks with explicit false for includeDescription to ensure string[] return type
+	const allLinks: string[] = [];
+	
+	story.passages.forEach(passage => {
+		// Explicitly get string[] result by setting includeDescription to false
+		const passageLinks = parseLinks(passage.text, false, false) as string[];
+		passageLinks.forEach(link => {
+			if (allLinks.indexOf(link) === -1) {
+				allLinks.push(link);
+			}
+		});
+	});
 
-	const brokenLinks = uniq(links).filter(
+	const brokenLinks = uniq(allLinks).filter(
 		link => !story.passages.some(passage => passage.name === link)
 	);
 
 	return {
 		brokenLinks,
-		links,
+		links: allLinks,
 		characters: story.passages.reduce(
 			(count, passage) => count + passage.text.length,
 			0

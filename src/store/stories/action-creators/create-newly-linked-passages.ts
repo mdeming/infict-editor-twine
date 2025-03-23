@@ -25,9 +25,9 @@ export function createNewlyLinkedPassages(
 	}
 
 	return dispatch => {
-		const oldLinks = parseLinks(oldText);
-		const toCreate = parseLinks(newText).filter(
-			l => !oldLinks.includes(l) && !story.passages.some(p => p.name === l)
+		const oldLinks = parseLinks(oldText, false, false) as string[];
+		const toCreate = (parseLinks(newText, false, false) as string[]).filter(
+			(l: string) => !oldLinks.includes(l) && !story.passages.some(p => p.name === l)
 		);
 
 		if (toCreate.length === 0) {
@@ -85,7 +85,7 @@ export function createNewlyLinkedPassages(
 		dispatch({
 			type: 'createPassages',
 			storyId: story.id,
-			props: toCreate.map(name => {
+			props: toCreate.map((name: string) => {
 				const result = {left, name, top};
 
 				left += passageDefs.width + passageGap;

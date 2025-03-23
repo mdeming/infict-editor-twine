@@ -10,3 +10,24 @@ path.passage-connection {
 path.passage-connection.variant-reference {
 	stroke-dasharray: 4px;
 }
+
+/* Custom link colors based on link descriptions */
+path.passage-connection.red-link {
+	stroke: #ff5555;
+}
+
+path.passage-connection.green-link {
+	stroke: #55ff55;
+}
+
+path.passage-connection.blue-link {
+	stroke: #5555ff;
+}
+
+path.passage-connection.purple-link {
+	stroke: #ff55ff;
+}
+
+path.passage-connection.orange-link {
+	stroke: #ffaa55;
+}
