@@ -22,7 +22,14 @@ describe('passageConnections()', () => {
 		expect(passageConnections(passages)).toEqual({
 			fixed: {
 				broken: new Set(),
-				connections: new Map([[passages[0], new Set([passages[1]])]]),
+				connections: new Map([
+					[
+						passages[0],
+						new Set([
+							{ from: passages[0], to: passages[1], description: undefined }
+						])
+					]
+				]),
 				self: new Set()
 			},
 			draggable: {
@@ -47,7 +54,14 @@ describe('passageConnections()', () => {
 			},
 			draggable: {
 				broken: new Set(),
-				connections: new Map([[passages[0], new Set([passages[1]])]]),
+				connections: new Map([
+					[
+						passages[0],
+						new Set([
+							{ from: passages[0], to: passages[1], description: undefined }
+						])
+					]
+				]),
 				self: new Set()
 			}
 		});
@@ -67,7 +81,14 @@ describe('passageConnections()', () => {
 			},
 			draggable: {
 				broken: new Set(),
-				connections: new Map([[passages[0], new Set([passages[1]])]]),
+				connections: new Map([
+					[
+						passages[0],
+						new Set([
+							{ from: passages[0], to: passages[1], description: undefined }
+						])
+					]
+				]),
 				self: new Set()
 			}
 		});

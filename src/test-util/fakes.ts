@@ -119,7 +119,6 @@ export function fakePrefs(overrides?: Partial<PrefsState>): PrefsState {
 		disabledStoryFormatEditorExtensions: [
 			{name: faker.lorem.words(2), version: faker.system.semver()}
 		],
-		donateShown: faker.datatype.boolean(),
 		editorCursorBlinks: faker.datatype.boolean(),
 		firstRunTime: new Date().getTime(),
 		lastUpdateSeen: '',
@@ -143,6 +142,12 @@ export function fakePrefs(overrides?: Partial<PrefsState>): PrefsState {
 		// editorCursorBlinks in some contexts.
 		useCodeMirror: true,
 		welcomeSeen: faker.datatype.boolean(),
+		remoteApi: {
+			defaultUrl: '',
+			rememberAuth: true,
+			authToken: undefined,
+			enforceHttps: false
+		},
 		...overrides
 	};
 }

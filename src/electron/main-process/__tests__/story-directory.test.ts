@@ -1,3 +1,4 @@
+import {join} from 'path';
 import {app, dialog, shell} from 'electron';
 import {copy, mkdirp, readdir, remove, stat} from 'fs-extra';
 import {getAppPref, setAppPref} from '../app-prefs';
@@ -15,6 +16,26 @@ jest.mock('electron');
 jest.mock('fs-extra');
 jest.mock('../app-prefs');
 jest.mock('../relaunch-dialog');
+
+const DEFAULT_STORIES_DIR = join(
+	'mock-electron-app-path-documents',
+	'common.appName',
+	'electron.storiesDirectoryName'
+);
+const DEFAULT_BACKUPS_DIR = join(
+	'mock-electron-app-path-documents',
+	'common.appName',
+	'electron.backupsDirectoryName'
+);
+
+/** Matches a path that is exactly `prefix` + sep + one-or-more path segments (cross-platform). */
+function expectPathWithPrefix(prefix: string) {
+	return expect.stringMatching(
+		new RegExp(
+			'^' + prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\\\/].+'
+		)
+	);
+}
 
 const getAppPrefMock = getAppPref as jest.Mock;
 
@@ -41,11 +62,11 @@ describe('backupStoryDirectory()', () => {
 		]);
 		statMock.mockImplementation((name: string) => {
 			switch (name) {
-				case 'mock-electron-app-path-documents/common.appName/electron.backupsDirectoryName/mock-backup-1':
-				case 'test-app-pref-backup-directory/mock-backup-1':
+				case join(DEFAULT_BACKUPS_DIR, 'mock-backup-1'):
+				case join('test-app-pref-backup-directory', 'mock-backup-1'):
 					return {mtimeMs: 1000};
-				case 'mock-electron-app-path-documents/common.appName/electron.backupsDirectoryName/mock-backup-2':
-				case 'test-app-pref-backup-directory/mock-backup-2':
+				case join(DEFAULT_BACKUPS_DIR, 'mock-backup-2'):
+				case join('test-app-pref-backup-directory', 'mock-backup-2'):
 					return {mtimeMs: 500};
 				default:
 					throw new Error(`Asked to stat unmocked file: ${name}`);
@@ -56,11 +77,7 @@ describe('backupStoryDirectory()', () => {
 	});
 
 	describe.each([
-		[
-			"isn't set",
-			undefined,
-			'mock-electron-app-path-documents/common.appName/electron.backupsDirectoryName'
-		],
+		["isn't set", undefined, DEFAULT_BACKUPS_DIR],
 		[
 			'is set',
 			'test-app-pref-backup-directory',
@@ -80,10 +97,7 @@ describe('backupStoryDirectory()', () => {
 		it(`copies the story directory to ${path}`, async () => {
 			await backupStoryDirectory();
 			expect(copyMock.mock.calls).toEqual([
-				[
-					'mock-electron-app-path-documents/common.appName/electron.storiesDirectoryName',
-					expect.stringMatching(new RegExp(`${path}/.+`))
-				]
+				[DEFAULT_STORIES_DIR, expectPathWithPrefix(path)]
 			]);
 		});
 
@@ -96,12 +110,12 @@ describe('backupStoryDirectory()', () => {
 
 		it('prunes the oldest backups if the number of backups is above the limit', async () => {
 			await backupStoryDirectory(1);
-			expect(removeMock.mock.calls).toEqual([[`${path}/mock-backup-2`]]);
+			expect(removeMock.mock.calls).toEqual([[join(path, 'mock-backup-2')]]);
 			removeMock.mockReset();
 			await backupStoryDirectory(0);
 			expect(removeMock.mock.calls).toEqual([
-				[`${path}/mock-backup-2`],
-				[`${path}/mock-backup-1`]
+				[join(path, 'mock-backup-2')],
+				[join(path, 'mock-backup-1')]
 			]);
 		});
 
@@ -195,9 +209,7 @@ describe('initStoryDirectoryPath()', () => {
 
 	it('returns the default path if no app pref is set', async () => {
 		await initStoryDirectory();
-		expect(getStoryDirectoryPath()).toBe(
-			'mock-electron-app-path-documents/common.appName/electron.storiesDirectoryName'
-		);
+		expect(getStoryDirectoryPath()).toBe(DEFAULT_STORIES_DIR);
 	});
 
 	describe('When an app pref is set', () => {
@@ -269,9 +281,7 @@ describe('initStoryDirectoryPath()', () => {
 			it('continues and returns the default path if the user chooses that option', async () => {
 				showMessageBoxMock.mockResolvedValue({response: 0});
 				await initStoryDirectory();
-				expect(getStoryDirectoryPath()).toBe(
-					'mock-electron-app-path-documents/common.appName/electron.storiesDirectoryName'
-				);
+				expect(getStoryDirectoryPath()).toBe(DEFAULT_STORIES_DIR);
 				expect(quitMock).not.toBeCalled();
 			});
 		});
@@ -289,11 +299,7 @@ describe('revealStoryDirectoryPath()', () => {
 
 	it('resolves after showing the story directory', async () => {
 		await revealStoryDirectory();
-		expect(openPathSpy.mock.calls).toEqual([
-			[
-				'mock-electron-app-path-documents/common.appName/electron.storiesDirectoryName'
-			]
-		]);
+		expect(openPathSpy.mock.calls).toEqual([[DEFAULT_STORIES_DIR]]);
 	});
 
 	it('rejects with an error if showing the story directory fails', async () => {

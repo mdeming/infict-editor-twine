@@ -20,6 +20,7 @@
 		"custom": "커스텀",
 		"delete": "삭제",
 		"deleteCount": "삭제 ({{count}})",
+		"deselectAll": "모두 선택 해제",
 		"details": "세부 사항",
 		"duplicate": "복제",
 		"edit": "편집",
@@ -142,20 +143,12 @@
 	},
 	"dialogs": {
 		"aboutTwine": {
-			"donateToTwine": "기부를 통해 Twine의 성장을 도와주세요",
 			"codeHeader": "코드",
 			"codeRepo": "소스 코드 저장소 방문",
 			"license": "이 애플리케이션은 <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3 라이선스</a>에 따라 출시되지만 이 애플리케이션으로 만든 모든 저작물은 상업적인 조건을 포함하여 어떤 조건으로든 공개될 수 있습니다.",
 			"localizationHeader": "현지화",
 			"title": "Twine {{version}} 정보",
 			"twineDescription": "Twine은 대화형 비선형 스토리를 전달하기 위한 오픈 소스 애플리케이션입니다."
-		},
-		"appDonation": {
-			"donate": "Twine 개발에 기부",
-			"onlyOnce": "(이 메시지는 한 번만 표시됩니다. 향후 Twine 개발에 기부하고 싶다면 Twine 정보 대화상자에 기부할 수 있는 링크가 있습니다.)",
-			"supportMessage": "Twine을 사랑하신다면 기부를 통해 프로젝트의 성장을 도와주세요. Twine은 언제나 무료로 사용할 수 있는 오픈 소스 프로젝트이며, 여러분의 도움으로 계속 발전해 나갈 수 있습니다.",
-			"noThanks": "사양하겠습니다",
-			"title": "Twine 개발 지원"
 		},
 		"appPrefs": {
 			"codeEditorFont": "코드 편집기 글꼴",

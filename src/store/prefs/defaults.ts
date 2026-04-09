@@ -6,7 +6,6 @@ export const defaults = (): PrefsState => ({
 	codeEditorFontScale: 1,
 	dialogWidth: 600,
 	disabledStoryFormatEditorExtensions: [],
-	donateShown: false,
 	editorCursorBlinks: true,
 	firstRunTime: new Date().getTime(),
 	lastUpdateSeen: '',
@@ -32,5 +31,11 @@ export const defaults = (): PrefsState => ({
 	storyListTagFilter: [],
 	storyTagColors: {},
 	useCodeMirror: true,
-	welcomeSeen: false
+	welcomeSeen: true,
+	remoteApi: {
+		defaultUrl: '',
+		rememberAuth: true,
+		authToken: undefined,
+		enforceHttps: false
+	}
 });

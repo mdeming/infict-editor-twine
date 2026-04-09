@@ -2,9 +2,19 @@ import * as React from 'react';
 import {LoadingCurtain} from '../components/loading-curtain';
 import {usePersistence} from './persistence/use-persistence';
 import {usePrefsContext} from './prefs';
-import {useStoriesContext} from './stories';
+import {
+	// exportStoryToRemoteTwee, // TODO: Incomplete feature - commented out
+	// importStoryFromRemoteTwee, // TODO: Incomplete feature - commented out
+	useStoriesContext
+} from './stories';
+import type {Story} from './stories';
 import {useStoryFormatsContext} from './story-formats';
 import {useStoriesRepair} from './use-stories-repair';
+import {
+	getRemoteQueryKeys,
+	readRemoteConnectionFromSearchParams,
+	REMOTE_SESSION_STORAGE_KEY
+} from '../config/remote-connection-config';
 
 export const StateLoader: React.FC = ({children}) => {
 	const [initing, setIniting] = React.useState(false);
@@ -12,12 +22,18 @@ export const StateLoader: React.FC = ({children}) => {
 	const [prefsRepaired, setPrefsRepaired] = React.useState(false);
 	const [formatsRepaired, setFormatsRepaired] = React.useState(false);
 	const [storiesRepaired, setStoriesRepaired] = React.useState(false);
+	const [remoteImportHandled, setRemoteImportHandled] = React.useState(false);
 	const {dispatch: prefsDispatch, prefs: prefsState} = usePrefsContext();
 	const {dispatch: storiesDispatch} = useStoriesContext();
 	const {dispatch: formatsDispatch, formats: formatsState} =
 		useStoryFormatsContext();
 	const repairStories = useStoriesRepair();
-	const {prefs, stories, storyFormats} = usePersistence();
+	const {
+		prefs,
+		stories: storiesPersistence,
+		storyFormats
+	} = usePersistence();
+	const initialStoriesRef = React.useRef<Story[]>([]);
 
 	// Done in steps so that the repair action can see the inited state, and then
 	// each repair action can see the results of the preceding ones.
@@ -30,11 +46,12 @@ export const StateLoader: React.FC = ({children}) => {
 			if (!initing) {
 				const formatsState = await storyFormats.load();
 				const prefsState = await prefs.load();
-				const storiesState = await stories.load();
+				const storiesState = await storiesPersistence.load();
 
 				formatsDispatch({type: 'init', state: formatsState});
 				prefsDispatch({type: 'init', state: prefsState});
 				storiesDispatch({type: 'init', state: storiesState});
+				initialStoriesRef.current = storiesState;
 				setInited(true);
 			}
 		}
@@ -47,7 +64,7 @@ export const StateLoader: React.FC = ({children}) => {
 		initing,
 		prefs,
 		prefsDispatch,
-		stories,
+		storiesPersistence,
 		storiesDispatch,
 		storyFormats
 	]);
@@ -81,9 +98,135 @@ export const StateLoader: React.FC = ({children}) => {
 		prefsState.storyFormat.name,
 		prefsState.storyFormat.version,
 		repairStories,
-		stories,
+		storiesPersistence,
 		storiesDispatch,
 		storiesRepaired
+	]);
+
+	React.useEffect(() => {
+		if (
+			inited &&
+			formatsRepaired &&
+			prefsRepaired &&
+			storiesRepaired &&
+			!remoteImportHandled
+		) {
+			setRemoteImportHandled(true);
+
+			const params = new URLSearchParams(window.location.search);
+			const queryKeys = getRemoteQueryKeys();
+			const {apiEndpoint, storyId, authToken, replaceExisting} =
+				readRemoteConnectionFromSearchParams(params, queryKeys);
+			(window as any).__twineRemoteExport = undefined;
+			(window as any).__twineRemoteConfig = undefined;
+			try {
+				sessionStorage.removeItem(REMOTE_SESSION_STORAGE_KEY);
+			} catch (storageError) {
+				console.warn('Unable to clear remote config', storageError);
+			}
+
+			if (apiEndpoint && storyId) {
+				(async () => {
+					let cleanupQueryParams = false;
+					let importedStory: Story | undefined;
+
+					try {
+						// TODO: Incomplete feature - importStoryFromRemoteTwee not implemented
+						// importedStory = await (storiesDispatch(
+						// 	importStoryFromRemoteTwee(storyId, {
+						// 		url: apiEndpoint,
+						// 		authToken
+						// 	})
+						// ) as unknown as Promise<Story>);
+
+						if (importedStory) {
+							// Story format is not forced; use config default for new stories
+						}
+
+						if (replaceExisting && importedStory) {
+							storiesDispatch({type: 'init', state: [importedStory]});
+							initialStoriesRef.current = [importedStory];
+						}
+
+						(window as typeof window & {
+							__twineRemoteExport?: (storyId: string) => Promise<void>;
+							__twineRemoteConfig?: {
+								apiEndpoint: string;
+								authToken?: string;
+								remoteStoryId: string;
+								localStoryId?: string;
+							};
+						}).__twineRemoteExport = async (localStoryId: string) => {
+							if (!localStoryId) {
+								return;
+							}
+
+							// TODO: Incomplete feature - exportStoryToRemoteTwee not implemented
+							// await storiesDispatch(
+							// 	exportStoryToRemoteTwee(localStoryId, {
+							// 		url: apiEndpoint,
+							// 		authToken
+							// 	})
+							// );
+						};
+
+						(window as any).__twineRemoteConfig = {
+							apiEndpoint,
+							authToken: authToken ?? undefined,
+							remoteStoryId: storyId,
+							localStoryId: importedStory?.id
+						};
+
+						try {
+							sessionStorage.setItem(
+								REMOTE_SESSION_STORAGE_KEY,
+								JSON.stringify({
+									apiEndpoint,
+									authToken: authToken ?? undefined,
+									remoteStoryId: storyId,
+									localStoryId: importedStory?.id
+								})
+							);
+						} catch (storageError) {
+							console.warn('Unable to persist remote config', storageError);
+						}
+
+						cleanupQueryParams = true;
+					} catch (error) {
+						console.error('Failed to load remote story', error);
+					} finally {
+						if (cleanupQueryParams) {
+							params.delete(queryKeys.apiBase);
+							params.delete(queryKeys.storyId);
+							params.delete(queryKeys.authToken);
+							params.delete('enforceHttps');
+							params.delete(queryKeys.replaceExisting);
+							params.delete('storyName');
+							params.delete('debug');
+							params.delete('timestamp');
+							params.delete('skipCache');
+							params.delete('forceRefresh');
+							params.delete('directEdit');
+
+							const newQuery = params.toString();
+							const nextUrl =
+								window.location.origin +
+								window.location.pathname +
+								(newQuery ? `?${newQuery}` : '') +
+								window.location.hash;
+							window.history.replaceState({}, '', nextUrl);
+						}
+					}
+				})();
+			}
+		}
+	}, [
+		formatsRepaired,
+		inited,
+		prefsRepaired,
+		storiesDispatch,
+		storiesRepaired,
+		remoteImportHandled
 	]);
 
 	return inited && formatsRepaired && prefsRepaired && storiesRepaired ? (

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {arc} from '../../../util/svg';
+import {arc, arcPointOffsetAlongOutwardNormal, ArcProps} from '../../../util/svg';
 import {
 	lineAngle,
 	lineDistance,
@@ -8,15 +8,31 @@ import {
 	Point
 } from '../../../util/geometry';
 import {Passage} from '../../../store/stories';
+import {ConnectionStyleFn} from '../../../store/use-format-connection-style';
+import {CONNECTION_STROKE} from './connection-style-stroke';
 import './passage-connection.css';
 
+function isConnectionStyleDebugEnabled(): boolean {
+	return (
+		process.env.NODE_ENV === 'development' ||
+		(typeof localStorage !== 'undefined' && localStorage.getItem('twine.debugConnectionStyle') === '1')
+	);
+}
+
 export interface PassageConnectionProps {
+	connectionStyle?: ConnectionStyleFn | null;
+	description?: string;
 	end: Passage;
 	offset: Point;
 	start: Passage;
 	variant: 'link' | 'reference';
-	description?: string;
 }
+
+// Default stroke/arrowhead color when no style applies (uses CSS var for light/dark mode)
+const DEFAULT_STROKE = 'var(--gray)';
+
+/** Fixed map-units offset along the curve normal so icons clear the stroke equally on short and long arcs */
+const CONNECTION_ICON_NORMAL_OFFSET = 10;
 
 // Function to determine link color from description
 const getLinkColor = (description?: string): string => {
@@ -41,10 +57,29 @@ const getLinkColor = (description?: string): string => {
 };
 
 export const PassageConnection: React.FC<PassageConnectionProps> = props => {
-	const {end, offset, start, variant, description} = props;
-	const colorClass = getLinkColor(description);
-	
-	const path = React.useMemo(() => {
+	const {connectionStyle, end, offset, start, variant, description} = props;
+	// Use description (part before ->) when present; otherwise use link target so plain [[SMS::foo]] links can be styled
+	const labelForStyle = description ?? end?.name ?? '';
+	const formatStyle =
+		connectionStyle && labelForStyle
+			? connectionStyle(labelForStyle)
+			: null;
+	const colorClass =
+		formatStyle?.colorClass ?? (connectionStyle ? '' : getLinkColor(description));
+	// Icon at midpoint (when format provides one); arrow always at end
+	const markerMid =
+		formatStyle?.markerId != null ? `url(#${formatStyle.markerId})` : undefined;
+	const markerEnd = 'url(#link-arrowhead)';
+	// Debug: log when connectionStyle is used (dev or twine.debugConnectionStyle) to verify format + labels
+	if (isConnectionStyleDebugEnabled() && connectionStyle && labelForStyle) {
+		console.debug('[ConnectionStyle] link', {
+			labelForStyle: labelForStyle.slice(0, 40),
+			formatStyle: formatStyle ? { colorClass: formatStyle.colorClass, markerId: formatStyle.markerId } : null,
+			applied: { colorClass, markerMid: markerMid ?? null, markerEnd }
+		});
+	}
+
+	const arcProps = React.useMemo((): ArcProps | null => {
 		// If either passage is selected, offset it. We need to take care not to
 		// overwrite the passage information.
 
@@ -77,13 +112,13 @@ export const PassageConnection: React.FC<PassageConnectionProps> = props => {
 		startPoint = rectIntersectionWithLine(offsetStart, startPoint, endPoint);
 
 		if (!startPoint) {
-			return '';
+			return null;
 		}
 
 		endPoint = rectIntersectionWithLine(offsetEnd, startPoint, endPoint);
 
 		if (!endPoint) {
-			return '';
+			return null;
 		}
 
 		// Draw a flattened arc, to make it easier to distinguish between links
@@ -110,14 +145,23 @@ export const PassageConnection: React.FC<PassageConnectionProps> = props => {
 		// The Y radius is another aesthetic choice. The lower the ratio, the less
 		// curved the lines become.
 
-		return arc({
+		return {
 			start: startPoint,
 			end: endPoint,
 			radius: {left: distance, top: distance * 0.75},
 			rotation: angle,
 			sweep
-		});
+		};
 	}, [end, offset.left, offset.top, start]);
+
+	// Always use a single arc for the path (no splitting)
+	const path = arcProps && arc(arcProps);
+
+	// Icon offset a fixed distance along the perpendicular at t=0.5 (into the arc bulge)
+	const midpoint =
+		arcProps && formatStyle?.markerId != null
+			? arcPointOffsetAlongOutwardNormal(arcProps, 0.5, CONNECTION_ICON_NORMAL_OFFSET)
+			: null;
 
 	// Combine CSS classes for base styling, variant, and color
 	const classNames = [`passage-connection`, `variant-${variant}`];
@@ -125,11 +169,30 @@ export const PassageConnection: React.FC<PassageConnectionProps> = props => {
 		classNames.push(colorClass);
 	}
 
+	const strokeColor = colorClass ? CONNECTION_STROKE[colorClass] : DEFAULT_STROKE;
+
+	// Render path + optional icon at midpoint. stroke and color both set so arrowhead (fill: currentColor) matches line
 	return (
-		<path
-			d={path}
-			className={classNames.join(' ')}
-			style={{markerEnd: 'url(#link-arrowhead)'}}
-		/>
+		<g>
+			<path
+				d={path ?? ''}
+				className={classNames.join(' ')}
+				style={{
+					markerEnd,
+					stroke: strokeColor,
+					color: strokeColor
+				}}
+			/>
+			{midpoint && formatStyle?.markerId && (
+				<use
+					href={`#${formatStyle.markerId}-icon`}
+					x={midpoint.left - 10}
+					y={midpoint.top - 10}
+					width="20"
+					height="20"
+					style={{ color: strokeColor }}
+				/>
+			)}
+		</g>
 	);
 };

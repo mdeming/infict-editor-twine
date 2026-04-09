@@ -5,6 +5,17 @@
 	margin-right: var(--grid-size);
 }
 
+.about-twine-dialog .about-twine-version {
+	font-weight: 600;
+	margin-bottom: calc(var(--grid-size) / 2);
+}
+
+.about-twine-dialog .about-twine-original-credits-header {
+	margin-left: var(--grid-size);
+	margin-right: var(--grid-size);
+	margin-bottom: calc(var(--grid-size) / 2);
+}
+
 .about-twine-dialog .links .icon-link {
 	display: block;
 	text-align: center;

@@ -8,6 +8,9 @@ import {
 } from '../passage-connections';
 
 jest.mock('../../../../store/use-format-reference-parser');
+jest.mock('../../../../store/use-format-connection-style', () => ({
+	useFormatConnectionStyle: () => null
+}));
 jest.mock('../link-markers');
 jest.mock('../start-connection');
 

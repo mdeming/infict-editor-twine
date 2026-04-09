@@ -1,3 +1,4 @@
+import {join} from 'path';
 import {loadJsonFile, loadJsonFileSync, saveJsonFile} from '../json-file';
 import {readJson, readJsonSync, writeJson} from 'fs-extra';
 
@@ -12,7 +13,7 @@ describe('loadJsonFile()', () => {
 		readJsonMock.mockResolvedValue(mockData);
 		expect(await loadJsonFile('test.json')).toBe(mockData);
 		expect(readJsonMock.mock.calls).toEqual([
-			['mock-electron-app-path-userData/test.json']
+			[join('mock-electron-app-path-userData', 'test.json')]
 		]);
 	});
 
@@ -33,7 +34,7 @@ describe('loadJsonFileSync()', () => {
 		readJsonSyncMock.mockReturnValue(mockData);
 		expect(loadJsonFileSync('test.json')).toBe(mockData);
 		expect(readJsonSyncMock.mock.calls).toEqual([
-			['mock-electron-app-path-userData/test.json']
+			[join('mock-electron-app-path-userData', 'test.json')]
 		]);
 	});
 
@@ -55,7 +56,7 @@ describe('saveJsonFile()', () => {
 
 		await saveJsonFile('test.json', mockData);
 		expect(writeJsonMock.mock.calls).toEqual([
-			['mock-electron-app-path-userData/test.json', mockData]
+			[join('mock-electron-app-path-userData', 'test.json'), mockData]
 		]);
 	});
 

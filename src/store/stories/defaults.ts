@@ -1,5 +1,8 @@
+import {getDefaultStoryFormat} from '../../config/format-defaults';
 import {i18n} from '../../util/i18n';
 import {Passage, Story} from './stories.types';
+
+export const DEFAULT_STORY_FORMAT = getDefaultStoryFormat();
 
 export const passageDefaults = (): Omit<Passage, 'id' | 'story'> => ({
 	height: 100,
@@ -22,8 +25,8 @@ export const storyDefaults = (): Omit<Story, 'id'> => ({
 	selected: false,
 	snapToGrid: true,
 	startPassage: '',
-	storyFormat: '',
-	storyFormatVersion: '',
+	storyFormat: DEFAULT_STORY_FORMAT.name,
+	storyFormatVersion: DEFAULT_STORY_FORMAT.version,
 	stylesheet: '',
 	tags: [],
 	tagColors: {},

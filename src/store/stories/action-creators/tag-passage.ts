@@ -1,5 +1,14 @@
-import {Passage, Story, UpdatePassageAction} from '../stories.types';
-import {isValidTagName} from '../../../util/tag';
+import {
+	Passage,
+	StoriesAction,
+	StoriesState,
+	Story,
+	UpdatePassageAction
+} from '../stories.types';
+import {isValidTagName, normalizeTag} from '../../../util/tag';
+import {storyPassageTags} from '../getters';
+import {Thunk} from 'react-hook-thunk-reducer';
+import {colorString} from '../../../util/color';
 
 /**
  * Adds a tag to a passage.
@@ -8,7 +17,7 @@ export function addPassageTag(
 	story: Story,
 	passage: Passage,
 	tagName: string
-): UpdatePassageAction {
+): Thunk<StoriesState, StoriesAction> {
 	if (passage.story !== story.id) {
 		throw new Error('This passage does not belong to this story.');
 	}
@@ -17,15 +26,36 @@ export function addPassageTag(
 		throw new Error(`"${tagName}" is not a valid tag name.`);
 	}
 
-	if (passage.tags.includes(tagName)) {
+	const tagNameNorm = normalizeTag(tagName);
+	if (passage.tags.some(t => normalizeTag(t) === tagNameNorm)) {
 		throw new Error(`This passage already has the tag "${tagName}".`);
 	}
 
-	return {
-		type: 'updatePassage',
-		passageId: passage.id,
-		storyId: story.id,
-		props: {tags: [...passage.tags, tagName]}
+	return dispatch => {
+		// If this is the first time a tag is being added to this story, assign it a
+		// color.
+
+		if (!storyPassageTags(story).includes(tagNameNorm)) {
+			dispatch({
+				type: 'updateStory',
+				storyId: story.id,
+				props: {
+					tagColors: {
+						...story.tagColors,
+						[tagName]: colorString(tagName)
+					}
+				}
+			});
+		}
+
+		// Replace any existing tag that normalizes to the same (e.g. "persistAll⁣" → "persistAll")
+		const otherTags = passage.tags.filter(t => normalizeTag(t) !== tagNameNorm);
+		dispatch({
+			type: 'updatePassage',
+			passageId: passage.id,
+			storyId: story.id,
+			props: {tags: [...otherTags, tagNameNorm]}
+		});
 	};
 }
 
@@ -45,7 +75,8 @@ export function removePassageTag(
 		throw new Error(`"${tagName}" is not a valid tag name.`);
 	}
 
-	if (!passage.tags.includes(tagName)) {
+	const tagNameNorm = normalizeTag(tagName);
+	if (!passage.tags.some(t => normalizeTag(t) === tagNameNorm)) {
 		throw new Error(`This passage does not have the tag "${tagName}".`);
 	}
 
@@ -53,6 +84,6 @@ export function removePassageTag(
 		type: 'updatePassage',
 		passageId: passage.id,
 		storyId: story.id,
-		props: {tags: passage.tags.filter(t => t !== tagName)}
+		props: {tags: passage.tags.filter(t => normalizeTag(t) !== tagNameNorm)}
 	};
 }

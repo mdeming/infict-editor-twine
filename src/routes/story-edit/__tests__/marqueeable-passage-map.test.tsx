@@ -25,6 +25,9 @@ const TestMarqueeablePassageMap: React.FC<
 
 jest.mock('../../../components/marquee-selection/marquee-selection');
 jest.mock('../../../components/passage/passage-map/passage-map');
+jest.mock('../../../store/use-format-connection-legend', () => ({
+	useFormatConnectionLegend: () => null
+}));
 
 describe('<MarqueeablePassageMap>', () => {
 	function renderComponent(props?: Partial<MarqueeablePassageMapProps>) {

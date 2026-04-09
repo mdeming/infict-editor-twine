@@ -3,6 +3,7 @@ import uniq from 'lodash/uniq';
 import {Passage, StorySearchFlags, Story} from './stories.types';
 import {createRegExp} from '../../util/regexp';
 import {parseLinks, LinkInfo} from '../../util/parse-links';
+import {normalizeTag} from '../../util/tag';
 
 // Custom interface for passage connections that includes link description
 export interface PassageConnection {
@@ -187,7 +188,11 @@ export function passagesMatchingSearch(
 export function storyPassageTags(story: Story) {
 	return Array.from(
 		story.passages.reduce((result, passage) => {
-			passage.tags && passage.tags.forEach(tag => result.add(tag));
+			passage.tags &&
+				passage.tags.forEach(tag => {
+					const normalized = normalizeTag(tag);
+					if (normalized) result.add(normalized);
+				});
 			return result;
 		}, new Set<string>())
 	).sort();

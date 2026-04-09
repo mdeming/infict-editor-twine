@@ -31,3 +31,39 @@ path.passage-connection.purple-link {
 path.passage-connection.orange-link {
 	stroke: #ffaa55;
 }
+
+/* Generic connection style slots for story format connectionStyle extension.
+   Include .variant-link so these beat base path.passage-connection when other
+   stylesheets load after this one. */
+path.passage-connection.variant-link.connection-style-1,
+path.passage-connection.variant-reference.connection-style-1 {
+	stroke: #e53935;
+}
+path.passage-connection.variant-link.connection-style-2,
+path.passage-connection.variant-reference.connection-style-2 {
+	stroke: #1e88e5;
+}
+path.passage-connection.variant-link.connection-style-3,
+path.passage-connection.variant-reference.connection-style-3 {
+	stroke: #43a047;
+}
+path.passage-connection.variant-link.connection-style-4,
+path.passage-connection.variant-reference.connection-style-4 {
+	stroke: #fb8c00;
+}
+path.passage-connection.variant-link.connection-style-5,
+path.passage-connection.variant-reference.connection-style-5 {
+	stroke: #8e24aa;
+}
+path.passage-connection.variant-link.connection-style-6,
+path.passage-connection.variant-reference.connection-style-6 {
+	stroke: #00897b;
+}
+path.passage-connection.variant-link.connection-style-7,
+path.passage-connection.variant-reference.connection-style-7 {
+	stroke: #6d4c41;
+}
+path.passage-connection.variant-link.connection-style-8,
+path.passage-connection.variant-reference.connection-style-8 {
+	stroke: #d81b60;
+}

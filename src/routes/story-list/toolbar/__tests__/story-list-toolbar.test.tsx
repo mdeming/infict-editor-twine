@@ -42,7 +42,7 @@ describe('<StoryListToolbar>', () => {
 
 	it('displays an app tab', async () => {
 		await renderComponent();
-		expect(screen.getByText('common.appName')).toBeInTheDocument();
+		expect(screen.getByText('common.more')).toBeInTheDocument();
 	});
 
 	it('is accessible', async () => {

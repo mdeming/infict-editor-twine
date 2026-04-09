@@ -20,6 +20,7 @@
 		"custom": "Personalizar",
 		"delete": "Apagar",
 		"deleteCount": "Apagar ({{count}})",
+		"deselectAll": "Desmarcar Tudo",
 		"details": "Detalhes",
 		"duplicate": "Duplicar",
 		"edit": "Editar",
@@ -142,20 +143,12 @@
 	},
 	"dialogs": {
 		"aboutTwine": {
-			"donateToTwine": "Ajuda o Twine a Crescer com uma Doação",
 			"codeHeader": "Código",
 			"codeRepo": "Visitar o Repositório do Código-Fonte",
 			"license": "Esta aplicação está publicada de acordo com a <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">licença GPL v3</a>, mas qualquer obra criada pode ser publicada de acordo com quaisquer outras condições, incluindo comerciais.",
 			"localizationHeader": "Localizações",
 			"title": "Sobre o Twine {{version}}",
 			"twineDescription": "O Twine é uma aplicação de código-fonte aberto para contar histórias interativas e não lineares."
-		},
-		"appDonation": {
-			"donate": "Doar para o desenvolvimento do Twine",
-			"onlyOnce": "(Esta mensagem só te será apresentada uma vez. Se quiseres fazer uma doação para o desenvolvimento do Twine, há uma hiperligação para o efeito na caixa de diálogo Sobre o Twine.)",
-			"supportMessage": "Se não podes viver sem o Twine, talvez o possas ajudar a crescer, fazendo uma doação. O Twine é um projeto de código-fonte aberto que será sempre gratuito — e graças à tua ajuda, o Twine poderá continuar a crescer.",
-			"noThanks": "Obrigado, mas não.",
-			"title": "Apoiar o Desenvolviment do Twine"
 		},
 		"appPrefs": {
 			"codeEditorFont": "Fonte do Editor de Código",
@@ -390,7 +383,7 @@
 			"storyFormats": "Formatos de História"
 		},
 		"build": {
-			"exportAsTwee": "Exportar para o formato Twee",			
+			"exportAsTwee": "Exportar para o formato Twee",
 			"play": "Jogar",
 			"proof": "Rever",
 			"publishToFile": "Publicar para Ficheiro",

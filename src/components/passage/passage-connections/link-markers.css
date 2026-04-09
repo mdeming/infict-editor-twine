@@ -1,7 +1,8 @@
 @import '../../../styles/colors.css';
 
 #link-arrowhead path {
-	fill: var(--gray);
+	/* fill: currentColor so arrowhead matches line color (set on path via inline style) */
+	fill: currentColor;
 	stroke: none;
 }
 

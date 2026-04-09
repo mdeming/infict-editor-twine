@@ -13,7 +13,8 @@ export type PrefsAction =
 				| string[]
 				| {name: string; version: string}
 				| {name: string; version: string}[]
-				| Record<string, Color>;
+				| Record<string, Color>
+				| {defaultUrl: string; rememberAuth: boolean; authToken?: string; enforceHttps: boolean};
 	  }
 	| {type: 'repair'; allFormats: StoryFormat[]};
 
@@ -41,10 +42,6 @@ export interface PrefsState {
 		name: string;
 		version: string;
 	}[];
-	/**
-	 * Has the donation prompt been shown?
-	 */
-	donateShown: boolean;
 	/**
 	 * Whether the cursor should blink in editor fields (passages, story JS, story
 	 * stylesheet).
@@ -114,6 +111,15 @@ export interface PrefsState {
 	 * Has the user been shown the welcome route?
 	 */
 	welcomeSeen: boolean;
+	/**
+	 * Remote API configuration for importing/exporting stories.
+	 */
+	remoteApi: {
+		defaultUrl: string;
+		rememberAuth: boolean;
+		authToken?: string;
+		enforceHttps: boolean;
+	};
 }
 
 export type PrefsDispatch = React.Dispatch<PrefsAction>;

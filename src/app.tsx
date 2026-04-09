@@ -8,6 +8,7 @@ import {StoriesContextProvider} from './store/stories';
 import {StoryFormatsContextProvider} from './store/story-formats';
 import {StateLoader} from './store/state-loader';
 import {ThemeSetter} from './store/theme-setter';
+import {ApiInitializer} from './store/persistence/api/api-initializer';
 import './styles/typography.css';
 
 export const App: React.FC = () => (
@@ -18,9 +19,11 @@ export const App: React.FC = () => (
 			<StoryFormatsContextProvider>
 				<StoriesContextProvider>
 					<StateLoader>
-						<React.Suspense fallback={<LoadingCurtain />}>
-							<Routes />
-						</React.Suspense>
+						<ApiInitializer>
+							<React.Suspense fallback={<LoadingCurtain />}>
+								<Routes />
+							</React.Suspense>
+						</ApiInitializer>
 					</StateLoader>
 				</StoriesContextProvider>
 			</StoryFormatsContextProvider>

@@ -1,5 +1,5 @@
 {
-	"colors": {		
+	"colors": {
 		"none": "Aucune",
 		"red": "Rouge",
 		"orange": "Orange",
@@ -13,6 +13,7 @@
 		"appName": "Twine",
 		"cancel": "Annuler",
 		"delete": "Supprimer",
+		"deselectAll": "Désélectionner tout",
 		"duplicate": "Dupliquer",
 		"edit": "Modifier",
 		"ok": "OK",
@@ -137,20 +138,12 @@
 	},
 	"dialogs": {
 		"aboutTwine": {
-			"donateToTwine": "Aidez Twine à Grandir Grâce À Un Don",
 			"codeHeader": "Code",
 			"codeRepo": "Visiter le Dépôt du code source",
 			"license": "Cette application est publiée sous la licence <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3</a>, mais toute oeuvre créée par son biais peut être publiée selon n'importe quel terme, y compris des termes commerciaux.",
 			"localizationHeader": "Localisations",
 			"title": "À Propos de Twine {{version}}",
 			"twineDescription": "Twine est une application open-source servant à la création d'histoires intéractives et non-linéaires."
-		},
-		"appDonation": {
-			"donate": "Faire un don pour le développement de Twine",
-			"onlyOnce": "(Ce message ne sera affiché qu'une seule fois. Si vous désirez faire un don pour le développement de Twine à l'avenir, un lien à cet effet se trouve dans la fenêtre 'À Propos de Twine'.)",
-			"supportMessage": "Si vous aimez Twine, pensez à aider notre travail avec un don. Twine est un projet open-source, qui restera gratuit et dynamique grâce à votre soutien.",
-			"noThanks": "Non Merci",
-			"title": "Aider le développement de Twine."
 		},
 		"appPrefs": {
 			"codeEditorFont": "Police de l'éditeur de code",
@@ -227,7 +220,6 @@
 			"noTags": "Aucune balise n'a été ajoutée à votre histoire.",
 			"title": "Balises de l'histoire"
 		},
-
 		"storyImport": {
 			"deselectAll": "Désélectionner tout",
 			"filePrompt": "Pour importer une histoire dans Twine, téléchargez une archive ou une histoire publiée.",

@@ -10,15 +10,15 @@ describe('Pref reducer', () => {
 		it('replaces state', () =>
 			expect(
 				reducer(
-					{...defs, donateShown: false},
+					{...defs, editorCursorBlinks: false},
 					{
 						type: 'init',
-						state: {donateShown: true, locale: 'mock-locale'}
+						state: {editorCursorBlinks: true, locale: 'mock-locale'}
 					}
 				)
 			).toEqual({
 				...defs,
-				donateShown: true,
+				editorCursorBlinks: true,
 				locale: 'mock-locale'
 			}));
 	});
@@ -27,7 +27,7 @@ describe('Pref reducer', () => {
 		it('changes state', () =>
 			expect(
 				reducer(
-					{...defs, donateShown: false},
+					{...defs, editorCursorBlinks: false},
 					{type: 'update', name: 'locale', value: 'mock-locale'}
 				)
 			).toEqual({
@@ -58,28 +58,34 @@ describe('Pref reducer', () => {
 
 		it('replaces undefined values', () =>
 			expect(
-				reducer({...defs, donateShown: undefined} as any, {
+				reducer({...defs, editorCursorBlinks: undefined} as any, {
 					allFormats,
 					type: 'repair'
 				})
-			).toEqual(expect.objectContaining({donateShown: defs.donateShown})));
+			).toEqual(
+				expect.objectContaining({editorCursorBlinks: defs.editorCursorBlinks})
+			));
 
 		it('replaces deleted values', () => {
 			const badState: any = {...defs};
 
-			delete badState.donateShown;
+			delete badState.editorCursorBlinks;
 			expect(reducer(badState, {allFormats, type: 'repair'})).toEqual(
-				expect.objectContaining({donateShown: defs.donateShown})
+				expect.objectContaining({
+					editorCursorBlinks: defs.editorCursorBlinks
+				})
 			);
 		});
 
 		it('replaces mistyped values', () =>
 			expect(
-				reducer({...defs, donateShown: 1} as any, {
+				reducer({...defs, editorCursorBlinks: 1} as any, {
 					allFormats,
 					type: 'repair'
 				})
-			).toEqual(expect.objectContaining({donateShown: defs.donateShown})));
+			).toEqual(
+				expect.objectContaining({editorCursorBlinks: defs.editorCursorBlinks})
+			));
 
 		it.each([NaN, Infinity])('replaces a %d with a number', value => {
 			const result = reducer({...defs, firstRunTime: value} as any, {

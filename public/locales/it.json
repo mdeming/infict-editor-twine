@@ -20,6 +20,7 @@
 		"custom": "Personalizzato",
 		"delete": "Elimina",
 		"deleteCount": "Elimina ({{count}})",
+		"deselectAll": "Deseleziona tutto",
 		"details": "Dettagli",
 		"duplicate": "Duplicato",
 		"edit": "Modifica",
@@ -142,20 +143,12 @@
 	},
 	"dialogs": {
 		"aboutTwine": {
-			"donateToTwine": "Aiuta Twine a crescere con una donazione",
 			"codeHeader": "Codice",
 			"codeRepo": "Visita il repository del codice sorgente",
 			"license": "Questa applicazione è rilasciata sotto la <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">licenza GPL v3</a>, ma qualsiasi lavoro creato con essa può essere rilasciato sotto qualsiasi termine, compresi quelli commerciali.",
 			"localizationHeader": "Localizzazioni",
 			"title": "Informazioni su Twine {{version}}",
 			"twineDescription": "Twine è un'applicazione open source per raccontare storie interattive e non lineari."
-		},
-		"appDonation": {
-			"donate": "Fai una donazione allo sviluppo di Twine",
-			"onlyOnce": "(Questo messaggio ti verrà mostrato solo una volta. Se in futuro vorrai fare una donazione allo sviluppo di Twine, c'è un link per farlo nella finestra di dialogo Informazioni su Twine.)",
-			"supportMessage": "Se ami Twine, ti preghiamo di considerare di aiutarlo a crescere con una donazione. Twine è un progetto open source che sarà sempre gratuito da usare e, con il tuo aiuto, Twine continuerà a prosperare.",
-			"noThanks": "No grazie",
-			"title": "Supporta lo sviluppo di Twine"
 		},
 		"appPrefs": {
 			"codeEditorFont": "Carattere dell'editor del codice",

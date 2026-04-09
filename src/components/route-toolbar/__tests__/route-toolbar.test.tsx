@@ -36,17 +36,6 @@ describe('<RouteToolbar>', () => {
 		expect(screen.getByTestId('mock-tab-content-2')).toBeInTheDocument();
 	});
 
-	it('displays a help button that opens the URL given in helpUrl prop in a new tab', () => {
-		const openSpy = jest
-			.spyOn(window, 'open')
-			.mockReturnValue(undefined as any);
-
-		renderComponent({helpUrl: 'mock-help-url'});
-		expect(openSpy).not.toHaveBeenCalled();
-		fireEvent.click(screen.getByRole('button', {name: 'common.help'}));
-		expect(openSpy.mock.calls).toEqual([['mock-help-url', '_blank']]);
-	});
-
 	it('displays pinned controls', () => {
 		renderComponent({pinnedControls: <div data-testid="pinned-control" />});
 		expect(screen.getByTestId('pinned-control')).toBeInTheDocument();

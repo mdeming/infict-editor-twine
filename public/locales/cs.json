@@ -20,6 +20,7 @@
 		"custom": "Vlastní",
 		"delete": "Smazat",
 		"deleteCount": "Smazat ({{count}})",
+		"deselectAll": "Zrušit výběr",
 		"details": "Podrobnosti",
 		"duplicate": "Duplikovat",
 		"edit": "Upravit",
@@ -142,20 +143,12 @@
 	},
 	"dialogs": {
 		"aboutTwine": {
-			"donateToTwine": "Pomozte Twine existovat z vašich dobrovolných příspěvků",
 			"codeHeader": "Kód",
 			"codeRepo": "Navštívit repozitář zdrojového kódu",
 			"license": "Tato aplikace byla zveřejněna pod licencí <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3</a>, jakékoliv dílo (včetně komerčních) s ní vytvořené může být zveřejněno pod jakoukoliv licencí.",
 			"localizationHeader": "Překlady",
 			"title": "O Twine {{version}}",
 			"twineDescription": "Twine je aplikace s otevřeným zdrojovým kódem pro vytváření interaktivních, nelinenárních příběhů."
-		},
-		"appDonation": {
-			"donate": "Přispět na vývoj Twinu",
-			"onlyOnce": "(Tato zpráva se vám ukáže pouze jednou. Pokud budete chtít v budoucnu podpořit vývoj Twinu menším příspěvkem, odkaz najdete v sekci O Twinu.)",
-			"supportMessage": "Pokud se vám Twine líbí, zvažte prosím jeho podporu s menším příspěvkem. Twine je projekt s otevřeným zdrojovým kódem, který bude navždy zdarma. S vaší pomocí se mu může stále dařit a růst.",
-			"noThanks": "Ne, díky",
-			"title": "Podpořit vývoj Twinu"
 		},
 		"appPrefs": {
 			"codeEditorFont": "Font editoru kódu",

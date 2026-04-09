@@ -57,6 +57,18 @@ export type StoryFormatToolbarFactory = (
 	environment: StoryFormatToolbarFactoryEnvironment
 ) => StoryFormatToolbarItem[];
 
+/** Optional story map legend for format-defined connection style slots */
+export interface ConnectionLegendItem {
+	colorClass: string;
+	label: string;
+	markerId?: string;
+}
+
+export interface ConnectionLegend {
+	items: ConnectionLegendItem[];
+	title?: string;
+}
+
 /**
  * Properties available once a story format is loaded. Note that some there is
  * some overlap between this and StoryFormat--this is so that we know certain
@@ -75,6 +87,12 @@ export interface StoryFormatProperties {
 					mode?: ModeFactory<unknown>;
 					toolbar?: StoryFormatToolbarFactory;
 				};
+				connectionStyle?: (
+					description: string
+				) => { colorClass?: string; markerId?: string } | null;
+				connectionLegend?: ConnectionLegend;
+				/** When true, Twine shows chip/raw view toggle in the passage toolbar. */
+				supportsChipView?: boolean;
 				references?: {
 					parsePassageText?: (text: string) => string[];
 				};

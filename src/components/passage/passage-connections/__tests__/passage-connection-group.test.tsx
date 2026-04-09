@@ -13,11 +13,15 @@ jest.mock('../self-connection');
 
 describe('<PassageConnectionGroup>', () => {
 	function renderComponent(props?: Partial<PassageConnectionGroupProps>) {
+		const fromPassage = fakePassage();
+		const toPassage = fakePassage();
 		const broken = new Set([fakePassage()]);
 		const connections = new Map();
 		const self = new Set([fakePassage()]);
 
-		connections.set(fakePassage(), new Set([fakePassage()]));
+		connections.set(fromPassage, new Set([
+			{ from: fromPassage, to: toPassage, description: undefined }
+		]));
 
 		return render(
 			<svg>
@@ -64,8 +68,13 @@ describe('<PassageConnectionGroup>', () => {
 		const passage3 = fakePassage();
 		const connections = new Map();
 
-		connections.set(passage1, new Set([passage2, passage3]));
-		connections.set(passage2, new Set([passage1]));
+		connections.set(passage1, new Set([
+			{ from: passage1, to: passage2, description: undefined },
+			{ from: passage1, to: passage3, description: undefined }
+		]));
+		connections.set(passage2, new Set([
+			{ from: passage2, to: passage1, description: undefined }
+		]));
 		renderComponent({connections});
 		expect(
 			screen.getByTestId(

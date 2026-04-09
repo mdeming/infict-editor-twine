@@ -11,7 +11,6 @@ import {useUndoableStoriesContext} from '../../store/undoable-stories';
 import {PassageText} from './passage-text';
 import {PassageToolbar} from './passage-toolbar';
 import {StoryFormatToolbar} from './story-format-toolbar';
-import {TagToolbar} from './tag-toolbar';
 import './passage-edit-contents.css';
 import {usePrefsContext} from '../../store/prefs';
 
@@ -41,6 +40,7 @@ export const PassageEditContents: React.FC<
 		story.storyFormatVersion
 	);
 	const {t} = useTranslation();
+	const [viewMode, setViewMode] = React.useState<'chip' | 'raw'>('chip');
 
 	React.useEffect(() => {
 		if (error) {
@@ -84,6 +84,12 @@ export const PassageEditContents: React.FC<
 		Promise.resolve().then(() => cmEditor.setSelections(selections));
 	}
 
+	// Must run before any early return — hooks order must not depend on editorCrashed.
+	const editorId = React.useMemo(
+		() => `passage-edit-${passage.id}`,
+		[passage.id]
+	);
+
 	if (editorCrashed) {
 		return (
 			<ErrorMessage>{t('dialogs.passageEdit.editorCrashed')}</ErrorMessage>
@@ -105,9 +111,11 @@ export const PassageEditContents: React.FC<
 					editor={cmEditor}
 					onExecCommand={handleExecCommand}
 					storyFormat={storyFormat}
+					viewMode={viewMode}
+					onViewModeChange={setViewMode}
+					editorId={editorId}
 				/>
 			)}
-			<TagToolbar disabled={disabled} passage={passage} story={story} />
 			<ErrorBoundary>
 				<PassageText
 					disabled={disabled}
@@ -117,6 +125,8 @@ export const PassageEditContents: React.FC<
 					story={story}
 					storyFormat={storyFormat}
 					storyFormatExtensionsDisabled={!storyFormatExtensionsEnabled}
+					viewMode={viewMode}
+					onViewModeChange={setViewMode}
 				/>
 			</ErrorBoundary>
 		</div>

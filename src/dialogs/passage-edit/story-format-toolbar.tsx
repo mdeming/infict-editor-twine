@@ -4,24 +4,44 @@ import {usePrefsContext} from '../../store/prefs';
 import {StoryFormat, StoryFormatToolbarItem} from '../../store/story-formats';
 import {useComputedTheme} from '../../store/prefs/use-computed-theme';
 import {useFormatCodeMirrorToolbar} from '../../store/use-format-codemirror-toolbar';
+import {useFormatSupportsChipView} from '../../store/use-format-supports-chip-view';
 import {ButtonBar} from '../../components/container/button-bar';
 import {IconButton} from '../../components/control/icon-button';
 import {MenuButton} from '../../components/control/menu-button';
 import './story-format-toolbar.css';
+
+const LazyViewModeToggle = React.lazy(() =>
+	import('./extended-editor/view-mode-toggle').then(m => ({default: m.ViewModeToggle}))
+);
 
 export interface StoryFormatToolbarProps {
 	disabled?: boolean;
 	editor?: CodeMirror.Editor;
 	onExecCommand: (name: string) => void;
 	storyFormat: StoryFormat;
+	viewMode?: 'chip' | 'raw';
+	onViewModeChange?: (mode: 'chip' | 'raw') => void;
+	editorId?: string;
 }
 
 export const StoryFormatToolbar: React.FC<StoryFormatToolbarProps> = props => {
-	const {disabled, editor, onExecCommand, storyFormat} = props;
+	const {
+		disabled,
+		editor,
+		onExecCommand,
+		storyFormat,
+		viewMode,
+		onViewModeChange,
+		editorId
+	} = props;
 	const containerRef = React.useRef<HTMLDivElement>(null);
 	const appTheme = useComputedTheme();
 	const {prefs} = usePrefsContext();
 	const toolbarFactory = useFormatCodeMirrorToolbar(
+		storyFormat.name,
+		storyFormat.version
+	);
+	const supportsChipView = useFormatSupportsChipView(
 		storyFormat.name,
 		storyFormat.version
 	);
@@ -61,13 +81,7 @@ export const StoryFormatToolbar: React.FC<StoryFormatToolbarProps> = props => {
 
 	React.useEffect(() => {
 		if (editor) {
-			// Run the toolbar factory initially.
-
 			tryToSetToolbar();
-
-			// React to both content changes and the selection and cursor moving,
-			// since the toolbar factory might want to do different things based on
-			// the cursor position or selection.
 
 			editor.on('cursorActivity', tryToSetToolbar);
 			return () => editor.off('cursorActivity', tryToSetToolbar);
@@ -75,9 +89,6 @@ export const StoryFormatToolbar: React.FC<StoryFormatToolbarProps> = props => {
 	}, [editor, tryToSetToolbar]);
 
 	function execCommand(name: string) {
-		// Run the command, then update the toolbar after the current execution
-		// context finishes.
-
 		onExecCommand(name);
 		Promise.resolve().then(tryToSetToolbar);
 	}
@@ -130,6 +141,18 @@ export const StoryFormatToolbar: React.FC<StoryFormatToolbarProps> = props => {
 
 					return null;
 				})}
+				{supportsChipView &&
+					viewMode !== undefined &&
+					onViewModeChange &&
+					editorId && (
+						<React.Suspense fallback={null}>
+							<LazyViewModeToggle
+								editorId={editorId}
+								currentMode={viewMode}
+								onModeChange={onViewModeChange}
+							/>
+						</React.Suspense>
+					)}
 			</ButtonBar>
 		</div>
 	);

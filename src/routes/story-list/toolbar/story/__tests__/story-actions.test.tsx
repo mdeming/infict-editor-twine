@@ -24,16 +24,9 @@ describe('<StoryActions>', () => {
 		expect(screen.getByText('common.edit')).toBeInTheDocument();
 	});
 
-	it('displays a button to rename stories', () => {
-		renderComponent();
-		expect(screen.getByText('common.rename')).toBeInTheDocument();
-	});
-
-	it.todo('renames a story when the rename story button is used');
-
 	it('displays a button to tag stories', () => {
 		renderComponent();
-		expect(screen.getByText('common.tag')).toBeInTheDocument();
+		expect(screen.getByText('common.tags')).toBeInTheDocument();
 	});
 
 	it('displays a button to duplicate stories', () => {

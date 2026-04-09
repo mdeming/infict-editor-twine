@@ -3,10 +3,12 @@ import {
 	MarqueeSelection,
 	MarqueeSelectionProps
 } from '../../components/marquee-selection';
+import {ConnectionStyleLegend} from '../../components/passage/passage-connections/connection-style-legend';
 import {
 	PassageMap,
 	PassageMapProps
 } from '../../components/passage/passage-map';
+import {useFormatConnectionLegend} from '../../store/use-format-connection-legend';
 import {Rect, rectsIntersect} from '../../util/geometry';
 
 export interface MarqueeablePassageMapProps
@@ -24,7 +26,9 @@ export interface MarqueeablePassageMapProps
 export const MarqueeablePassageMap: React.FC<
 	MarqueeablePassageMapProps
 > = props => {
-	const {container, onSelectRect, ...other} = props;
+	const {container, onSelectRect, formatName, formatVersion, visibleZoom, ...other} =
+		props;
+	const connectionLegend = useFormatConnectionLegend(formatName, formatVersion);
 	const [temporaryRect, setTemporaryRect] = React.useState<Rect>();
 	const [temporaryAdditive, setTemporaryAdditive] = React.useState<boolean>();
 	const innerPassages = React.useMemo(() => {
@@ -73,11 +77,21 @@ export const MarqueeablePassageMap: React.FC<
 		<>
 			<MarqueeSelection
 				container={container}
-				ignoreEventsOnSelector=".passage-card, .fuzzy-finder, .zoom-buttons"
+				ignoreEventsOnSelector=".passage-card, .fuzzy-finder, .zoom-buttons, .connection-style-legend"
 				onSelectRect={handleSelectRect}
 				onTemporarySelectRect={handleTemporarySelectRect}
 			/>
-			<PassageMap {...other} passages={innerPassages} />
+			<PassageMap
+				{...other}
+				formatName={formatName}
+				formatVersion={formatVersion}
+				passages={innerPassages}
+				visibleZoom={visibleZoom}
+			/>
+			<ConnectionStyleLegend
+				fixedViewport
+				legend={connectionLegend}
+			/>
 		</>
 	);
 };

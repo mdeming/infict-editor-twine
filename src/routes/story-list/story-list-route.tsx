@@ -3,13 +3,8 @@ import * as React from 'react';
 import {useTranslation} from 'react-i18next';
 import {MainContent} from '../../components/container/main-content';
 import {SafariWarningCard} from '../../components/error';
-import {
-	AppDonationDialog,
-	DialogsContextProvider,
-	useDialogsContext
-} from '../../dialogs';
+import {DialogsContextProvider} from '../../dialogs';
 import {usePrefsContext} from '../../store/prefs';
-import {useDonationCheck} from '../../store/prefs/use-donation-check';
 import {
 	deselectAllStories,
 	deselectStory,
@@ -22,10 +17,8 @@ import {StoryCards} from './story-cards';
 import {ClickAwayListener} from '../../components/click-away-listener';
 
 export const InnerStoryListRoute: React.FC = () => {
-	const {dispatch: dialogsDispatch} = useDialogsContext();
 	const {dispatch: storiesDispatch, stories} = useStoriesContext();
 	const {prefs} = usePrefsContext();
-	const {shouldShowDonationPrompt} = useDonationCheck();
 	const {t} = useTranslation();
 
 	const selectedStories = React.useMemo(
@@ -58,12 +51,6 @@ export const InnerStoryListRoute: React.FC = () => {
 			}
 		}
 	}, [selectedStories, stories, storiesDispatch, visibleStories]);
-
-	React.useEffect(() => {
-		if (shouldShowDonationPrompt()) {
-			dialogsDispatch({type: 'addDialog', component: AppDonationDialog});
-		}
-	}, [dialogsDispatch, shouldShowDonationPrompt]);
 
 	return (
 		<div className="story-list-route">

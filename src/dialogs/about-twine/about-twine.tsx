@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useTranslation} from 'react-i18next';
-import {IconCode, IconHeart} from '@tabler/icons';
+import {IconCode} from '@tabler/icons';
 import {ButtonBar} from '../../components/container/button-bar';
 import {DialogCard} from '../../components/container/dialog-card';
 import {IconLink} from '../../components/control/icon-link';
@@ -8,6 +8,8 @@ import {getAppInfo} from '../../util/app-info';
 import {DialogComponentProps} from '../dialogs.types';
 import credits from './credits.json';
 import './about-twine.css';
+
+const SOURCE_REPOSITORY_URL = 'https://github.com/infict/infict-editor-twine';
 
 export const AboutTwineDialog: React.FC<DialogComponentProps> = props => {
 	const {t} = useTranslation();
@@ -18,17 +20,23 @@ export const AboutTwineDialog: React.FC<DialogComponentProps> = props => {
 			{...props}
 			className="about-twine-dialog"
 			fixedSize
-			headerLabel={t('dialogs.aboutTwine.title', {
-				version: info.version
-			})}
+			headerLabel={t('dialogs.aboutTwine.title')}
 		>
 			<div className="content">
-				<p>{t('dialogs.aboutTwine.twineDescription')}</p>
+				<p className="about-twine-version">
+					{t('dialogs.aboutTwine.versionLine', {version: info.version})}
+				</p>
+				<p>{t('dialogs.aboutTwine.forkSpecialized')}</p>
+				<p>{t('dialogs.aboutTwine.forkDevelopedBy')}</p>
 				<p
 					dangerouslySetInnerHTML={{
 						__html: t('dialogs.aboutTwine.license')
 					}}
 				/>
+				<h3 className="about-twine-original-credits-header">
+					{t('dialogs.aboutTwine.originalCreditsHeader')}
+				</h3>
+				<p>{t('dialogs.aboutTwine.originalCreditsLead')}</p>
 				<div className="credits">
 					<div className="code">
 						<h3>{t('dialogs.aboutTwine.codeHeader')}</h3>
@@ -49,15 +57,10 @@ export const AboutTwineDialog: React.FC<DialogComponentProps> = props => {
 				</div>
 				<ButtonBar>
 					<IconLink
-						href="https://twinery.org/donate"
-						icon={<IconHeart />}
-						label={t('dialogs.aboutTwine.donateToTwine')}
-						variant="primary"
-					/>
-					<IconLink
-						href="https://github.com/klembot/twinejs"
+						href={SOURCE_REPOSITORY_URL}
 						icon={<IconCode />}
 						label={t('dialogs.aboutTwine.codeRepo')}
+						variant="primary"
 					/>
 				</ButtonBar>
 			</div>

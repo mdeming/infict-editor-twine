@@ -17,18 +17,11 @@ describe('<AboutTwineDialog>', () => {
 		);
 	}
 
-	it('displays a link to donate', () => {
-		renderComponent();
-		expect(
-			screen.getByText('dialogs.aboutTwine.donateToTwine').getAttribute('href')
-		).toBe('https://twinery.org/donate');
-	});
-
 	it('displays a link to the code repo', () => {
 		renderComponent();
 		expect(
 			screen.getByText('dialogs.aboutTwine.codeRepo').getAttribute('href')
-		).toBe('https://github.com/klembot/twinejs');
+		).toBe('https://github.com/infict/infict-editor-twine');
 	});
 
 	it('is accessible', async () => {

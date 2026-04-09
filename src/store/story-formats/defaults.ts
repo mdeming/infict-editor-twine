@@ -1,4 +1,18 @@
-export const builtins = () => [
+import {
+	BUNDLED_EXTENDED_FORMAT,
+	getBundledExtendedFormatJsUrl,
+	isForkExtendedBuild,
+	parseExtraBuiltinsFromEnv
+} from '../../config/fork-build-config';
+
+export type BuiltinStoryFormatRow = {
+	name: string;
+	url: string;
+	version: string;
+	userAdded?: boolean;
+};
+
+const builtinsWithoutExtended = (): BuiltinStoryFormatRow[] => [
 	{
 		name: 'Chapbook',
 		url: 'story-formats/chapbook-1.2.3/format.js',
@@ -31,13 +45,13 @@ export const builtins = () => [
 	},
 	{
 		name: 'Snowman',
-		url: 'story-formats/snowman-1.4.0/format.js',
-		version: '1.4.0'
+		url: 'story-formats/snowman-1.5.0/format.js',
+		version: '1.5.0'
 	},
 	{
 		name: 'Snowman',
-		url: 'story-formats/snowman-2.0.2/format.js',
-		version: '2.0.2',
+		url: 'story-formats/snowman-2.1.1/format.js',
+		version: '2.1.1',
 		userAdded: false
 	},
 	{
@@ -51,3 +65,48 @@ export const builtins = () => [
 		version: '2.37.3'
 	}
 ];
+
+const bundledExtendedBuiltinRow = (): BuiltinStoryFormatRow => ({
+	name: BUNDLED_EXTENDED_FORMAT.name,
+	url: getBundledExtendedFormatJsUrl(),
+	version: BUNDLED_EXTENDED_FORMAT.version
+});
+
+function mergeExtraBuiltins(
+	primary: BuiltinStoryFormatRow[],
+	extras: ReturnType<typeof parseExtraBuiltinsFromEnv>
+): BuiltinStoryFormatRow[] {
+	if (extras.length === 0) {
+		return primary;
+	}
+	const urls = new Set(primary.map(p => p.url));
+	const out = [...primary];
+	for (const e of extras) {
+		if (!urls.has(e.url)) {
+			urls.add(e.url);
+			out.push({
+				name: e.name,
+				url: e.url,
+				version: e.version,
+				userAdded: false
+			});
+		}
+	}
+	return out;
+}
+
+const builtinsAll = (): BuiltinStoryFormatRow[] => {
+	const withoutExt = builtinsWithoutExtended();
+	const withExt = [
+		...withoutExt.slice(0, 8),
+		bundledExtendedBuiltinRow(),
+		...withoutExt.slice(8)
+	];
+	return mergeExtraBuiltins(withExt, parseExtraBuiltinsFromEnv());
+};
+
+/** Builtin story formats shipped with the app. Extended format is omitted when `VITE_TWINE_FORK_EXTENDED=false`. */
+export const builtins = () =>
+	isForkExtendedBuild()
+		? builtinsAll()
+		: builtinsAll().filter(f => f.name !== BUNDLED_EXTENDED_FORMAT.name);

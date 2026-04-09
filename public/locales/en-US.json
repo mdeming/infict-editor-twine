@@ -15,15 +15,18 @@
 		"build": "Build",
 		"cancel": "Cancel",
 		"close": "Close",
+		"collapse": "Collapse",
 		"color": "Color",
 		"create": "Create",
 		"custom": "Custom",
 		"delete": "Delete",
 		"deleteCount": "Delete ({{count}})",
+		"deselectAll": "Deselect All",
 		"details": "Details",
 		"duplicate": "Duplicate",
 		"edit": "Edit",
 		"editCount": "Edit ({{count}})",
+		"expand": "Expand",
 		"help": "Help",
 		"import": "Import",
 		"maximize": "Maximize",
@@ -45,6 +48,7 @@
 		"story": "Story",
 		"storyFormat": "Story Format",
 		"tag": "Tag",
+		"tags": "Tags",
 		"test": "Test",
 		"twine": "Twine",
 		"undo": "Undo",
@@ -136,26 +140,30 @@
 			"loadingCount": "Loading 1 Story Format...",
 			"loadingCount_plural": "Loading {{loadingCount}} Story Formats..."
 		},
+		"tagCardButton": {
+			"alreadyAdded": "This tag name has already been added.",
+			"addLabel": "Add Tag",
+			"invalidName": "Please enter a valid tag name.",
+			"tagNameLabel": "Tag Name",
+			"tagsWithCount_plural": "Tags ({{count}})"
+		},
 		"tagEditor": {
 			"alreadyExists": "A tag with this name already exists."
 		}
 	},
 	"dialogs": {
 		"aboutTwine": {
-			"donateToTwine": "Help Twine Grow With A Donation",
 			"codeHeader": "Code",
-			"codeRepo": "Visit Source Code Repository",
+			"codeRepo": "Visit inFict Editor source repository",
+			"forkDevelopedBy": "Developed by inFict for immersive storytelling.",
+			"forkSpecialized": "This is a specialized fork of the open-source Twine project.",
 			"license": "This application is released under the <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GPL v3 license</a>, but any work created with it may be released under any terms, including commercial ones.",
 			"localizationHeader": "Localizations",
-			"title": "About Twine {{version}}",
+			"originalCreditsHeader": "Original Credits:",
+			"originalCreditsLead": "Created by Chris Klimas and the Twine contributors.",
+			"title": "inFict Editor (Twine)",
+			"versionLine": "Version {{version}}",
 			"twineDescription": "Twine is an open-source application for telling interactive, nonlinear stories."
-		},
-		"appDonation": {
-			"donate": "Donate To Twine Development",
-			"onlyOnce": "(This message will only be shown to you once. If you'd like to donate to Twine development in the future, there's a link to do so in the About Twine dialog.)",
-			"supportMessage": "If you love Twine, please consider helping it grow with a donation. Twine is an open source project that will always be free to use—and with your help, Twine will continue to thrive.",
-			"noThanks": "No Thanks",
-			"title": "Support Twine Development"
 		},
 		"appPrefs": {
 			"codeEditorFont": "Code Editor Font",
@@ -180,6 +188,10 @@
 		},
 		"passageEdit": {
 			"editorCrashed": "Something went wrong with this editor. Try closing it and editing this passage again.",
+			"passageCommandEditor": {
+				"editRequest": "Edit {{requestType}} Request",
+				"editResponse": "Edit {{responseType}}"
+			},
 			"passageTextEditorLabel": "Passage Text",
 			"passageTextPlaceholder": "Enter the body text of your passage here. To link to another passage, put two square brackets around its name, [[like this]].",
 			"setAsStart": "Start Story Here",
@@ -188,6 +200,16 @@
 			"sizeSmall": "Small",
 			"sizeTall": "Tall",
 			"sizeWide": "Wide"
+		},
+		"storyFormatEditor": {
+			"publishingRemote": "Publishing to remote…",
+			"sessionRefresh": "Session expired — requesting fresh token…",
+			"retryingPublish": "Token refreshed — retrying publish…",
+			"publishedRemote": "Published to remote",
+			"publishSuccessToast": "Story published to remote backend",
+			"publishRemoteShort": "Publish to remote",
+			"publishRemoteTitle": "Publish story to the connected remote backend",
+			"publishingEllipsis": "Publishing…"
 		},
 		"passageTags": {
 			"noTags": "No tags have been added to passages in this story.",
@@ -242,6 +264,11 @@
 		},
 		"storySearch": {
 			"title": "Find and Replace",
+			"error": {
+				"emptyName": "Replacing would cause “{{name}}” to have an empty name.",
+				"invalidRegex": "The text entered isn’t a valid regular expression.",
+				"nameConflict": "Replacing would cause “{{name}}” to have the same name as another passage."
+			},
 			"find": "Find",
 			"includePassageNames": "Include Passage Names",
 			"matchCase": "Match Case",

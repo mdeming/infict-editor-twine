@@ -1,7 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {axe} from 'jest-axe';
 import * as React from 'react';
-import {useDonationCheck} from '../../../store/prefs/use-donation-check';
 import {
 	FakeStateProvider,
 	FakeStateProviderProps,
@@ -11,18 +10,9 @@ import {InnerStoryListRoute} from '../story-list-route';
 
 jest.mock('../toolbar/story-list-toolbar');
 jest.mock('../story-cards');
-jest.mock('../../../store/prefs/use-donation-check');
 jest.mock('../../../components/error/safari-warning-card');
 
 describe('<StoryListRoute>', () => {
-	const useDonationCheckMock = useDonationCheck as jest.Mock;
-
-	beforeEach(() => {
-		useDonationCheckMock.mockReturnValue({
-			shouldShowDonationPrompt: () => false
-		});
-	});
-
 	function renderComponent(contexts?: FakeStateProviderProps) {
 		// Using the inner component so we can mock contexts around it.
 
@@ -92,26 +82,6 @@ describe('<StoryListRoute>', () => {
 		expect(storyCards.length).toBe(2);
 		expect(storyCards[0].dataset.id).toBe(story1.id);
 		expect(storyCards[1].dataset.id).toBe(story2.id);
-	});
-
-	it('displays a donation prompt if useDonationCheck() says it should be shown', () => {
-		useDonationCheckMock.mockReturnValue({
-			shouldShowDonationPrompt: () => true
-		});
-
-		renderComponent();
-		expect(screen.getByText('dialogs.appDonation.title')).toBeInTheDocument();
-	});
-
-	it('does not display a donation prompt if useDonationCheck() says it should not be shown', () => {
-		useDonationCheckMock.mockReturnValue({
-			shouldShowDonationPrompt: () => false
-		});
-
-		renderComponent();
-		expect(
-			screen.queryByText('dialogs.appDonation.title')
-		).not.toBeInTheDocument();
 	});
 
 	it('is accessible', async () => {

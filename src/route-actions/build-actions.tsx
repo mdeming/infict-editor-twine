@@ -1,10 +1,4 @@
-import {
-	IconEyeglass,
-	IconFileText,
-	IconPlayerPlay,
-	IconTool,
-	IconX
-} from '@tabler/icons';
+import {IconFileText, IconX} from '@tabler/icons';
 import * as React from 'react';
 import {useTranslation} from 'react-i18next/';
 import {ButtonBar} from '../components/container/button-bar';
@@ -15,9 +9,9 @@ import {IconFileTwee} from '../components/image/icon';
 import {storyFileName} from '../electron/shared';
 import {Story} from '../store/stories';
 import {usePublishing} from '../store/use-publishing';
-import {useStoryLaunch} from '../store/use-story-launch';
 import {saveHtml, saveTwee} from '../util/save-file';
 import {storyToTwee} from '../util/twee';
+import {RemotePublishButton} from '../routes/story-edit/toolbar/remote-publish-button';
 
 export interface BuildActionsProps {
 	story?: Story;
@@ -25,46 +19,11 @@ export interface BuildActionsProps {
 
 export const BuildActions: React.FC<BuildActionsProps> = ({story}) => {
 	const {publishStory} = usePublishing();
-	const [playError, setPlayError] = React.useState<Error>();
-	const [proofError, setProofError] = React.useState<Error>();
 	const [publishError, setPublishError] = React.useState<Error>();
-	const [testError, setTestError] = React.useState<Error>();
-	const {playStory, proofStory, testStory} = useStoryLaunch();
 	const {t} = useTranslation();
 
 	function resetErrors() {
-		setPlayError(undefined);
-		setProofError(undefined);
 		setPublishError(undefined);
-		setTestError(undefined);
-	}
-
-	async function handlePlay() {
-		if (!story) {
-			throw new Error('No story provided to publish');
-		}
-
-		resetErrors();
-
-		try {
-			await playStory(story.id);
-		} catch (error) {
-			setPlayError(error as Error);
-		}
-	}
-
-	async function handleProof() {
-		if (!story) {
-			throw new Error('No story provided to publish');
-		}
-
-		resetErrors();
-
-		try {
-			await proofStory(story.id);
-		} catch (error) {
-			setProofError(error as Error);
-		}
 	}
 
 	async function handlePublishFile() {
@@ -81,20 +40,6 @@ export const BuildActions: React.FC<BuildActionsProps> = ({story}) => {
 		}
 	}
 
-	async function handleTest() {
-		if (!story) {
-			throw new Error('No story provided to publish');
-		}
-
-		resetErrors();
-
-		try {
-			await testStory(story.id);
-		} catch (error) {
-			setTestError(error as Error);
-		}
-	}
-
 	function handleExportAsTwee() {
 		if (!story) {
 			throw new Error('No story provided to export');
@@ -105,63 +50,6 @@ export const BuildActions: React.FC<BuildActionsProps> = ({story}) => {
 
 	return (
 		<ButtonBar>
-			<CardButton
-				ariaLabel={testError?.message ?? ''}
-				disabled={!story}
-				icon={<IconTool />}
-				label={t('routeActions.build.test')}
-				onChangeOpen={() => setTestError(undefined)}
-				onClick={handleTest}
-				open={!!testError}
-			>
-				<CardContent>
-					<p>{testError?.message}</p>
-					<IconButton
-						icon={<IconX />}
-						label={t('common.close')}
-						onClick={() => setTestError(undefined)}
-						variant="primary"
-					/>
-				</CardContent>
-			</CardButton>
-			<CardButton
-				ariaLabel={playError?.message ?? ''}
-				disabled={!story}
-				icon={<IconPlayerPlay />}
-				label={t('routeActions.build.play')}
-				onChangeOpen={() => setPlayError(undefined)}
-				onClick={handlePlay}
-				open={!!playError}
-			>
-				<CardContent>
-					<p>{playError?.message}</p>
-					<IconButton
-						icon={<IconX />}
-						label={t('common.close')}
-						onClick={() => setPlayError(undefined)}
-						variant="primary"
-					/>
-				</CardContent>
-			</CardButton>
-			<CardButton
-				ariaLabel={proofError?.message ?? ''}
-				disabled={!story}
-				icon={<IconEyeglass />}
-				label={t('routeActions.build.proof')}
-				onChangeOpen={() => setProofError(undefined)}
-				onClick={handleProof}
-				open={!!proofError}
-			>
-				<CardContent>
-					<p>{proofError?.message}</p>
-					<IconButton
-						icon={<IconX />}
-						label={t('common.close')}
-						onClick={() => setProofError(undefined)}
-						variant="primary"
-					/>
-				</CardContent>
-			</CardButton>
 			<CardButton
 				ariaLabel={publishError?.message ?? ''}
 				disabled={!story}
@@ -187,6 +75,16 @@ export const BuildActions: React.FC<BuildActionsProps> = ({story}) => {
 				label={t('routeActions.build.exportAsTwee')}
 				onClick={handleExportAsTwee}
 			/>
+			{story && (
+				<RemotePublishButton
+					storyId={story.id}
+					variant="icon"
+					label={t(
+						'dialogs.storyFormatEditor.publishRemoteShort',
+						'Publish to remote'
+					)}
+				/>
+			)}
 		</ButtonBar>
 	);
 };

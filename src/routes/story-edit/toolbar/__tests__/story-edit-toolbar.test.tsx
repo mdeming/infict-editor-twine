@@ -50,7 +50,7 @@ describe('<StoryEditToolbar>', () => {
 
 	it('displays an app tab', async () => {
 		await renderComponent();
-		expect(screen.getByText('common.appName')).toBeInTheDocument();
+		expect(screen.getByText('common.more')).toBeInTheDocument();
 	});
 
 	it('displays undo/redo buttons', async () => {
